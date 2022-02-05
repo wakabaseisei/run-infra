@@ -1,0 +1,67 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql
+  labels:
+    app: mysql
+data:
+  master.cnf: |
+    # Apply this config only on the master.
+    [mysqld]
+    log-bin
+    character-set-server = utf8mb4
+    collation-server = utf8mb4_bin
+
+    default-time-zone = SYSTEM
+    log_timestamps = SYSTEM
+    general_log=1
+    general_log_file=/var/log/mysql/general-query.log
+
+    [mysql]
+    default-character-set = utf8mb4
+
+    [client]
+    default-character-set = utf8mb4
+  slave.cnf: |
+    # Apply this config only on slaves.
+    [mysqld]
+    super-read-only
+    character-set-server = utf8mb4
+    collation-server = utf8mb4_bin
+
+    default-time-zone = SYSTEM
+    log_timestamps = SYSTEM
+    general_log=1
+    general_log_file=/var/log/mysql/general-query.log
+
+    [mysql]
+    default-character-set = utf8mb4
+
+    [client]
+    default-character-set = utf8mb4
+  createdb.sql: |
+    CREATE TABLE IF NOT EXISTS
+    go_database.users(
+        id serial,
+        sex int NOT NULL,
+        introduction VARCHAR(255) NOT NULL,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        PRIMARY KEY(id)
+    ) ENGINE=INNODB DEFAULT CHARSET=utf8;
+    CREATE TABLE IF NOT EXISTS
+    go_database.posts(
+        id serial,
+        title VARCHAR(255) NOT NULL,
+        content VARCHAR(255) NOT NULL,
+        publish_date int NOT NULL,
+        thumbnail_url VARCHAR(255),
+        user_id bigint UNSIGNED NOT NULL,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        PRIMARY KEY(id),
+        FOREIGN KEY (user_id)
+        REFERENCES users(id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+    ) ENGINE=INNODB DEFAULT CHARSET=utf8;

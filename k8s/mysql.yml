@@ -1,0 +1,116 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-server
+spec:
+  type: ClusterIP
+  ports:
+    - name: mysql
+      port: 3306
+      targetPort: 3306
+      protocol: TCP
+  selector:
+    app: mysql-server
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql-server
+spec:
+  selector:
+    matchLabels:
+      app: mysql-server
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: mysql-server
+    spec:
+      containers:
+        - image: mysql@sha256:92ad1d7e3f8eb7e67d35bf251912fb7cd12676a601dc90b6beb1aece7c1f5073
+          name: mysql
+          resources:
+          env:
+            - name: MYSQL_USER
+              value: go_user
+            - name: MYSQL_PASSWORD
+              value: password
+            - name: MYSQL_ROOT_PASSWORD
+              value: root
+            - name: TZ
+              value: Asia/Tokyo
+            - name: MYSQL_DATABASE
+              value: go_database
+          ports:
+            - containerPort: 3306
+              name: mysql
+          volumeMounts:
+            - name: mysql-server-initdb
+              mountPath: /docker-entrypoint-initdb.d
+            - name: mysql-server-conf
+              mountPath: /etc/mysql/conf.d
+            - name: mysql-server-data
+              mountPath: /var/lib/mysql
+      volumes:
+        - name: mysql-server-initdb
+          configMap:
+            name: mysql-server-initdb-config
+        - name: mysql-server-conf
+          configMap:
+            name: mysql-server-conf-config
+        - name: mysql-server-data
+          persistentVolumeClaim:
+            claimName: mysql-pv-claim
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-server-initdb-config
+data:
+  createdb.sql: |
+    CREATE TABLE IF NOT EXISTS
+    go_database.users(
+        id serial,
+        sex int NOT NULL,
+        introduction VARCHAR(255) NOT NULL,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        PRIMARY KEY(id)
+    ) ENGINE=INNODB DEFAULT CHARSET=utf8;
+    CREATE TABLE IF NOT EXISTS
+    go_database.posts(
+        id serial,
+        title VARCHAR(255) NOT NULL,
+        content VARCHAR(255) NOT NULL,
+        publish_date int NOT NULL,
+        thumbnail_url VARCHAR(255),
+        user_id bigint UNSIGNED NOT NULL,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        PRIMARY KEY(id),
+        FOREIGN KEY (user_id)
+        REFERENCES users(id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+    ) ENGINE=INNODB DEFAULT CHARSET=utf8;
+    insert into users (id, sex, introduction) values (1, 1, "It is so cool!");
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-server-conf-config
+data:
+  custom.cnf: |
+    [mysqld]
+    character-set-server = utf8mb4
+    collation-server = utf8mb4_bin
+
+    default-time-zone = SYSTEM
+    log_timestamps = SYSTEM
+
+    [mysql]
+    default-character-set = utf8mb4
+
+    [client]
+    default-character-set = utf8mb4
