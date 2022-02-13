@@ -16,6 +16,10 @@ spec:
       initContainers:
         - name: init-mysql
           image: mysql@sha256:92ad1d7e3f8eb7e67d35bf251912fb7cd12676a601dc90b6beb1aece7c1f5073
+          resources:
+            requests:
+              cpu: 15m
+              memory: 100Mi
           command:
             - bash
             - "-c"
@@ -43,6 +47,10 @@ spec:
               mountPath: /mnt/initdb
         - name: clone-mysql
           image: gcr.io/google-samples/xtrabackup:1.0
+          resources:
+            requests:
+              cpu: 15m
+              memory: 100Mi
           command:
             - bash
             - "-c"
@@ -97,8 +105,8 @@ spec:
               mountPath: /docker-entrypoint-initdb.d
           resources:
             requests:
-              cpu: 500m
-              memory: 1Gi
+              cpu: 15m
+              memory: 100Mi
           livenessProbe:
             exec:
               command:
@@ -180,7 +188,7 @@ spec:
               mountPath: /etc/mysql/conf.d
           resources:
             requests:
-              cpu: 100m
+              cpu: 15m
               memory: 100Mi
       volumes:
         - name: conf
@@ -197,4 +205,4 @@ spec:
         accessModes: ["ReadWriteOnce"]
         resources:
           requests:
-            storage: 5Gi
+            storage: 1Gi
