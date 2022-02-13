@@ -27,9 +27,14 @@ spec:
       labels:
         app: goapi
     spec:
+      tolerations:
+      - key: dedicated
+        operator: Equal
+        value: "true"
+        effect: NoSchedule
       containers:
         - name: goapi
-          image: wakabaseisei/goapi:latest
+          image: asia.gcr.io/run-app-341001/goapi:latest
           resources:
             limits:
               memory: "128Mi"
