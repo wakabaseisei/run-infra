@@ -20,6 +20,9 @@ spec:
             requests:
               cpu: 15m
               memory: 100Mi
+            # limits:
+            #   cpu: "15m"
+            #   memory: "150Mi"
           command:
             - bash
             - "-c"
@@ -51,6 +54,9 @@ spec:
             requests:
               cpu: 15m
               memory: 100Mi
+            # limits:
+            #   cpu: "15m"
+            #   memory: "150Mi"
           command:
             - bash
             - "-c"
@@ -107,6 +113,9 @@ spec:
             requests:
               cpu: 15m
               memory: 100Mi
+            # limits:
+            #   cpu: "15m"
+            #   memory: "150Mi"
           livenessProbe:
             exec:
               command:
@@ -190,6 +199,9 @@ spec:
             requests:
               cpu: 15m
               memory: 100Mi
+            # limits:
+            #   cpu: "15m"
+            #   memory: "150Mi"
       volumes:
         - name: conf
           emptyDir: {}

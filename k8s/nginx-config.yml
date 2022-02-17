@@ -28,15 +28,22 @@ data:
 
       server {
           listen       80;
-          server_name  localhost;
 
           location /users {
             proxy_pass  http://goapi:8080;
+
+            add_header Access-Control-Allow-Origin *;
+            add_header Access-Control-Allow-Methods *;
+            add_header Access-Control-Allow-Private-Network "true";
           }
 
           location / {
             root  /usr/share/nginx/html;
             index index.html;
+            
+            add_header Access-Control-Allow-Origin *;
+            add_header Access-Control-Allow-Methods *;
+            add_header Access-Control-Allow-Private-Network "true";
           }
       }
     }
