@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-ingress
+spec:
+  selector:
+    app: nginx
+  ports:
+  - port: 80
+    targetPort: nginx-port
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: run-ingress
+  labels:
+    name: run-ingress
+spec:
+  rules:
+    http:
+      paths:
+      - pathType: Exact
+        path: "/"
+        backend:
+          service:
+            name: nginx-ingress
+            port: 
+              number: 80
+      - pathType: Prefix
+        path: "/users"
+        backend:
+          service:
+            name: nginx-ingress
+            port: 
+              number: 80

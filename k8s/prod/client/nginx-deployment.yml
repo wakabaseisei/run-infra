@@ -1,34 +1,21 @@
-apiVersion: v1
-kind: Service
-metadata:
-  name: node
-spec:
-  type: NodePort
-  selector:
-    app: node
-  ports:
-    - port: 80
-      targetPort: node-port
-      nodePort: 30090
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: node
+  name: nginx
   labels:
-    app: node
+    app: nginx
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: node
+      app: nginx
   template:
     metadata:
       labels:
-        app: node
+        app: nginx
     spec:
       containers:
-        - name: node
+        - name: nginx
           image: asia.gcr.io/run-app-341001/reactapp:latest
           resources:
             limits:
@@ -36,7 +23,7 @@ spec:
               cpu: "20m"
           ports:
             - containerPort: 80
-              name: node-port
+              name: nginx-port
               protocol: TCP
           volumeMounts:
             - mountPath: /etc/nginx
