@@ -5,13 +5,13 @@ kubectl apply -f ./volume
 kubectl apply -f ./mysql
 
 # mysqlのPodたちがReady状態になるのを待つ
-kubectl wait all -l app=mysql --for condition=Ready --timeout 200s
+kubectl wait --for=condition=Ready pod/mysql-2 --timeout 200s
 
 # APIのPodの立ち上げ
 kubectl apply -f ./api
 
 # APIのPodがReady状態になるのを待つ
-kubectl wait all -l app=goapi --for condition=Ready --timeout 120s
+kubectl wait pods --for=condition=Ready -l app=goapi --timeout 200s
 
 # フロントエンドのPodの立ち上げ
 kubectl apply -f ./client/nginx-config.yml
