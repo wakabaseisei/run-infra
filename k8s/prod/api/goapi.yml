@@ -1,16 +1,3 @@
-apiVersion: v1
-kind: Service
-metadata:
-  name: goapi
-  labels:
-    app: goapi
-spec:
-  selector:
-    app: goapi
-  ports:
-    - protocol: TCP
-      port: 8080
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -42,3 +29,9 @@ spec:
           ports:
             - containerPort: 8080
               protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: "/health-check"
+              port: 8080
+            initialDelaySeconds: 10
+            timeoutSeconds: 10
