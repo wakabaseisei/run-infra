@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: goapi
+  labels:
+    app: goapi
+spec:
+  selector:
+    app: goapi
+  ports:
+    - protocol: TCP
+      port: 8080

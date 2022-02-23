@@ -1,13 +1,31 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: nginx-ingress
+  name: goapi
+  annotations:
+    cloud.google.com/neg: '{"ingress": true}'
+  labels:
+    app: goapi
 spec:
+  selector:
+    app: goapi
+  ports:
+    - protocol: TCP
+      port: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-ingress
+  annotations:
+    cloud.google.com/neg: '{"ingress": true}'
+spec:
+  type: ClusterIP
   selector:
     app: nginx
   ports:
-  - port: 80
-    targetPort: nginx-port
+    - port: 80
+      targetPort: nginx-port
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -16,20 +34,18 @@ metadata:
   labels:
     name: run-ingress
 spec:
+  defaultBackend:
+    service:
+      name: nginx-ingress
+      port:
+        number: 80
   rules:
-    http:
-      paths:
-      - pathType: Exact
-        path: "/"
-        backend:
-          service:
-            name: nginx-ingress
-            port: 
-              number: 80
-      - pathType: Prefix
-        path: "/users"
-        backend:
-          service:
-            name: nginx-ingress
-            port: 
-              number: 80
+    - http:
+        paths:
+          - path: /users
+            pathType: Prefix
+            backend:
+              service:
+                name: goapi
+                port:
+                  number: 8080
