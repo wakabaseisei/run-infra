@@ -46,6 +46,10 @@ resource "google_cloud_run_service" "default" {
             }
           }
         }
+        env {
+          name = "CLOUD_SQL_HOST"
+          value = google_sql_database_instance.instance.private_ip_address
+        }
       }
       service_account_name = google_service_account.run_service_account.email
     }

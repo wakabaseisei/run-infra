@@ -1,5 +1,11 @@
 provider "google" {
-  project = "run-app-341001"
-  region  = "asia-northeast1"
-  zone    = "asia-northeast1-a"
+  project = var.project
+  region  = var.region
+  zone    = var.zone
+}
+
+provider "google-beta" {
+  project = var.project
+  region  = var.region
+  zone    = var.zone
 }
